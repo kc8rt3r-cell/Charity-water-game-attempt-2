@@ -1,0 +1,133 @@
+:root {
+  color-scheme: light;
+  --sky: #bfe3f2;
+  --river: #2b9bd6;
+  --river-deep: #0b5275;
+  --sun: #f3d97b;
+  --ink: #0b1e2b;
+  --panel: rgba(255, 255, 255, 0.9);
+  --shadow: rgba(11, 30, 43, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #d7f1ff 0%, #c5e4f6 40%, #a7cfdd 100%);
+  color: var(--ink);
+  overflow: hidden;
+  touch-action: none;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, var(--sky) 0%, #8fc4db 55%, var(--sun) 100%);
+}
+
+#ui {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.panel {
+  width: min(92vw, 420px);
+  padding: 28px 24px 32px;
+  border-radius: 24px;
+  background: var(--panel);
+  box-shadow: 0 20px 45px var(--shadow);
+  text-align: center;
+  display: grid;
+  gap: 14px;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  font-size: 2.6rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.7rem;
+  color: rgba(11, 82, 117, 0.75);
+}
+
+h1 {
+  font-family: "Bungee", "Impact", sans-serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1;
+}
+
+h2 {
+  font-family: "Bungee", "Impact", sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+
+.subhead {
+  font-size: 0.95rem;
+  color: rgba(11, 30, 43, 0.75);
+}
+
+.score-line {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+button,
+.primary,
+.ghost {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary {
+  background: linear-gradient(120deg, var(--river), var(--river-deep));
+  color: white;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  box-shadow: 0 15px 30px rgba(11, 82, 117, 0.35);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid rgba(11, 82, 117, 0.3);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+}
+
+.button-row {
+  display: grid;
+  gap: 10px;
+}
+
+.is-hidden {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  .panel {
+    width: min(80vw, 460px);
+    padding: 32px 30px 36px;
+  }
+}

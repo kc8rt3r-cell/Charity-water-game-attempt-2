@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Streamy Flow: charity:water Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Sora:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="gameCanvas" aria-label="Streamy Flow game canvas"></canvas>
+
+    <div id="ui">
+      <section class="panel start-panel" data-state="start">
+        <div class="logo" aria-hidden="true">🧴</div>
+        <p class="eyebrow">charity:water Edition</p>
+        <h1>Streamy Flow</h1>
+        <p class="subhead">Swipe or drag left/right to guide the stream.</p>
+        <div class="score-line">
+          High Score <span id="highScoreValue">0</span>
+        </div>
+        <button id="startButton" class="primary">Tap or Click to Start</button>
+      </section>
+
+      <section class="panel gameover-panel is-hidden" data-state="gameover">
+        <h2>Stream Ended</h2>
+        <p class="subhead" id="finalScore">Score 0</p>
+        <div class="button-row">
+          <a class="primary" href="https://www.charitywater.org/donate" target="_blank" rel="noreferrer">
+            Donate to Revive
+          </a>
+          <button class="ghost" id="adButton" type="button">Watch Ad to Revive</button>
+          <button class="ghost" id="restartButton" type="button">New Stream!</button>
+        </div>
+      </section>
+    </div>
+
+    <noscript>This game needs JavaScript enabled to run.</noscript>
+
+    <script src="game.js"></script>
+  </body>
+</html>
