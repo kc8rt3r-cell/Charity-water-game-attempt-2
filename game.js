@@ -6,6 +6,7 @@ const adButton = document.getElementById("adButton");
 const startPanel = document.querySelector(".start-panel");
 const gameoverPanel = document.querySelector(".gameover-panel");
 const highScoreValue = document.getElementById("highScoreValue");
+const finalScore = document.getElementById("finalScore");
 
 const pressedKeys = new Set();
 const droplet = {
@@ -22,18 +23,23 @@ const state = {
   dpr: window.devicePixelRatio || 1,
   mode: "start",
   shapes: [],
+  goldenCircles: [],
   gameOverTimer: null,
   shapeCount: 0,
   elapsed: 0,
   trail: [],
-  maxTrail: 120,
+  maxTrail: 60,
+  score: 0,
+  highScore: 0,
+  goldenCount: 4,
 };
 
 const getBaseShapeCount = () => Math.max(10, Math.floor(state.width / 80));
 
 const buildShapes = () => {
   state.shapes = Array.from({ length: state.shapeCount }, () => {
-    const size = 10 + Math.random() * 24;
+    const baseSize = 10 + Math.random() * 24;
+    const size = baseSize * (0.6 + Math.random() * 1.4);
     return {
       x: Math.random() * state.width,
       y: Math.random() * state.height,
@@ -44,10 +50,36 @@ const buildShapes = () => {
   });
 };
 
+const spawnGoldenCircle = () => {
+  const radius = 10 + Math.random() * 6;
+  const padding = 36 + radius;
+  return {
+    x: padding + Math.random() * (state.width - padding * 2),
+    y: padding + Math.random() * (state.height - padding * 2),
+    radius,
+  };
+};
+
+const buildGoldenCircles = () => {
+  state.goldenCircles = Array.from({ length: state.goldenCount }, () => spawnGoldenCircle());
+};
+
 const loadHighScore = () => {
   const stored = Number(window.localStorage.getItem("streamyHighScore"));
   if (!Number.isNaN(stored)) {
+    state.highScore = stored;
     highScoreValue.textContent = stored.toString();
+  }
+};
+
+const updateScoreUI = () => {
+  if (finalScore) {
+    finalScore.textContent = `Score ${state.score}`;
+  }
+  if (state.score > state.highScore) {
+    state.highScore = state.score;
+    highScoreValue.textContent = state.highScore.toString();
+    window.localStorage.setItem("streamyHighScore", state.highScore.toString());
   }
 };
 
@@ -68,6 +100,7 @@ const resize = () => {
     state.shapeCount = baseCount;
   }
   buildShapes();
+  buildGoldenCircles();
 };
 
 const setMode = (mode) => {
@@ -107,7 +140,10 @@ const startGame = () => {
   state.shapeCount = getBaseShapeCount();
   state.elapsed = 0;
   state.trail = [{ x: droplet.x, y: droplet.y }];
+  state.score = 0;
+  updateScoreUI();
   buildShapes();
+  buildGoldenCircles();
   setMode("playing");
 };
 
@@ -130,6 +166,7 @@ const updateDroplet = (deltaSeconds) => {
 
   if (droplet.y - droplet.radius > state.height) {
     droplet.y = -droplet.radius;
+    state.trail = [{ x: droplet.x, y: droplet.y }];
     state.shapeCount += 4;
     buildShapes();
   }
@@ -137,6 +174,17 @@ const updateDroplet = (deltaSeconds) => {
   state.trail.push({ x: droplet.x, y: droplet.y });
   if (state.trail.length > state.maxTrail) {
     state.trail.shift();
+  }
+
+  for (const circle of state.goldenCircles) {
+    const dx = droplet.x - circle.x;
+    const dy = droplet.y - circle.y;
+    const minDistance = droplet.radius + circle.radius;
+    if (dx * dx + dy * dy <= minDistance * minDistance) {
+      state.score += 1;
+      updateScoreUI();
+      Object.assign(circle, spawnGoldenCircle());
+    }
   }
 
   for (const shape of state.shapes) {
@@ -221,6 +269,35 @@ const drawShapes = () => {
   ctx.restore();
 };
 
+const drawGoldenCircles = () => {
+  if (state.goldenCircles.length === 0) {
+    return;
+  }
+
+  ctx.save();
+  ctx.fillStyle = "rgba(246, 198, 64, 0.9)";
+  for (const circle of state.goldenCircles) {
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+};
+
+const drawScore = () => {
+  if (state.mode !== "playing") {
+    return;
+  }
+
+  ctx.save();
+  ctx.fillStyle = "rgba(11, 30, 43, 0.82)";
+  ctx.font = "600 18px Sora, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText(`Score ${state.score}`, 18, 16);
+  ctx.restore();
+};
+
 const drawGameOverText = () => {
   if (state.mode !== "gameover") {
     return;
@@ -251,9 +328,11 @@ const render = (timestamp) => {
   ctx.fillRect(0, 0, state.width, state.height);
 
   drawShapes();
+  drawGoldenCircles();
 
   drawTrail();
   drawDroplet();
+  drawScore();
   drawGameOverText();
 
   requestAnimationFrame(render);
